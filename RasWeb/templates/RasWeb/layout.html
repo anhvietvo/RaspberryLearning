@@ -1,0 +1,68 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to Raspberry Pi</title>
+    <link rel="shortcut icon" href="{% static 'RasWeb/logo.png' %}" type="image/icon type"/>
+    <link rel="stylesheet" href="{% static 'RasWeb/style.css' %}">
+    <!-- Compressed CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation.min.css" integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous">
+
+    <!-- Compressed JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/js/foundation.min.js" integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous"></script>
+    <!-- foundation-float.min.css: Compressed CSS with legacy Float Grid -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation-float.min.css" integrity="sha256-4ldVyEvC86/kae2IBWw+eJrTiwNEbUUTmN0zkP4luL4=" crossorigin="anonymous">
+
+    <!-- foundation-prototype.min.css: Compressed CSS with prototyping classes -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation-prototype.min.css" integrity="sha256-BiKflOunI0SIxlTOOUCQ0HgwXrRrRwBkIYppEllPIok=" crossorigin="anonymous">
+
+    <!-- foundation-rtl.min.css: Compressed CSS with right-to-left reading direction -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation-rtl.min.css" integrity="sha256-F+9Ns8Z/1ZISonBbojH743hsmF3x3AlQdJEeD8DhQsE=" crossorigin="anonymous">
+  </head>
+  <body>
+    <img class="bg-img" src="{% static 'RasWeb/bg1.jpg' %}" alt="background image">
+    <div class="title">
+      <h0>RASPBERRY CONTROLLER</h0>
+    </div>
+    <div class="grid-container">
+      <div class="grid-x grid-margin-x medium-up-2">
+        <div class="cell">
+          <div class="card">
+            <a href="#" class="thumbnail"
+              ><img
+                src="{% static 'RasWeb/light.jpg' %}"
+                alt="Photo of a light bulb"
+            /></a>
+            <div class="card-section">
+              <h4 style="font-weight: bold;">LIGHT <span class="badge success">OK</span></h4>
+              <div class="expanded button-group">
+                {% if status == 'on' %}
+                  {% block on %}
+                  {% endblock %}
+                {% elif status == 'off' %}
+                  {% block off %}
+                  {% endblock %}
+                {% else %}
+                  {% block body %}
+                  {% endblock %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cell">
+          <div class="card">
+                    <a href="#" class="thumbnail"><img src="{% static 'RasWeb/temp.jpg' %}" alt="Photo of temparature."></a>
+            <div class="card-section">
+              <h4 style="font-weight: bold;">Degree <span class="badge warning">Fail</span></h4>
+              <p>Not available</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

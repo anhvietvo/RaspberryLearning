@@ -1,0 +1,19 @@
+{% extends "RasWeb/layout.html" %} 
+{% block body %}
+	<a href="{% url 'light_control:turn_on' %}" class="success button"style="font-weight: bold; font-style:italic;">Turn on</a>
+	<a href="{% url 'light_control:blink' %}" class="warning button"style="font-style: italic; font-weight: bold;">Blink mode</a>
+	<a href="{% url 'light_control:turn_off' %}"class="alert button"style="font-weight: bold; font-style: italic;">Turn off</a>
+{% endblock %}
+
+{% block on %}
+	<button type="button" class="button hollow success" disabled >Turn on</button>
+	<a href="{% url 'light_control:blink' %}"class="warning button"style="font-weight: bold; font-style: italic;">Blink mode</a>
+	<a href="{% url 'light_control:turn_off' %}"class="alert button"style="font-weight: bold; font-style: italic;">Turn off</a>
+{% endblock %}
+
+{% block off %}
+	<a href="{% url 'light_control:turn_on' %}" class="success button"style="font-weight: bold; font-style: italic;">Turn on</a>
+	<a href="{% url 'light_control:blink' %}"class="warning button"style="font-weight: bold; font-style: italic;">Blink mode</a>
+	<button type="button" class="button hollow alert" disabled>Turn off</button>
+{% endblock %}
+
