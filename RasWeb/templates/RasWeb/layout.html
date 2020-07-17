@@ -58,15 +58,26 @@
 								{% endif %}
 								<div
 									class="reveal"
-									id="exampleModal1"
+									id="modalBlink"
 									data-reveal
+									data-close-on-click="true"
+									data-animation-in="hinge-in-from-top"
+									data-animation-out="hinge-out-from-top"
 								>
-									<h1>Awesome. I Have It.</h1>
-									<p class="lead">Your couch. It is mine.</p>
-									<p>
-										I'm a cool paragraph that lives inside
-										of an even cooler modal. Wins!
-									</p>
+									<form>
+										<div class="medium-6 cell">
+											<label style="font-weight: bold;">Number of blinks
+											<input type="number" placeholder="Number">
+											</label>
+										</div>
+											<div class="grid-x grid-padding-x">
+											<fieldset class="large-7 cell">
+												<legend style="font-weight: bold;">Choose your favorite speed</legend>
+												<input id="checkboxFast" type="checkbox"><label for="checkbox1">FAST</label>
+												<input id="checkboxSlow" type="checkbox"><label for="checkbox2">SLOW</label>
+											</fieldset>
+											</div>
+									</form>
 									<button
 										class="close-button"
 										data-close

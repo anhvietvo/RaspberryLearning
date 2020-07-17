@@ -1,7 +1,7 @@
 {% extends "RasWeb/layout.html" %} 
 {% block body %}
 	<a href="{% url 'light_control:turn_on' %}" class="success button"style="font-weight: bold; font-style:italic;">Turn on</a>
-	<button data-open="exampleModal1" class="warning button" style="font-weight: bold; font-style: italic;">Blink mode</button>
+	<button data-toggle="modalBlink" class="warning button" style="font-weight: bold; font-style: italic;">Blink mode</button>
 	<a href="{% url 'light_control:turn_off' %}"class="alert button"style="font-weight: bold; font-style: italic;">Turn off</a>
 {% endblock %}
 
