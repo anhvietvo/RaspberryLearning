@@ -1,19 +1,152 @@
-{% extends "RasWeb/layout.html" %} 
-{% block body %}
-	<a href="{% url 'light_control:turn_on' %}" class="success button"style="font-weight: bold; font-style:italic;">Turn on</a>
-	<button data-toggle="modalBlink" class="warning button" style="font-weight: bold; font-style: italic;">Blink mode</button>
-	<a href="{% url 'light_control:turn_off' %}"class="alert button"style="font-weight: bold; font-style: italic;">Turn off</a>
-{% endblock %}
+{% load static %}
 
-{% block on %}
-	<button type="button" class="button hollow success" disabled >Turn on</button>
-	<a href="{% url 'light_control:blink' %}"class="warning button"style="font-weight: bold; font-style: italic;">Blink mode</a>
-	<a href="{% url 'light_control:turn_off' %}"class="alert button"style="font-weight: bold; font-style: italic;">Turn off</a>
-{% endblock %}
+<!DOCTYPE html>
+<html class="no-js" lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="x-ua-compatible" content="ie=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Welcome to Raspberry Pi</title>
+		<link
+			rel="stylesheet"
+			href="{% static 'foundation/css/foundation.css' %}"
+		/>
+		<link rel="stylesheet" href="{% static 'foundation/css/app.css' %}" />
+		<link
+			rel="shortcut icon"
+			href="{% static 'RasWeb/logo.png' %}"
+			type="image/icon type"
+		/>
+		<link rel="stylesheet" href="{% static 'RasWeb/style.css' %}" />
+		<!-- foundation-rtl.min.css: Compressed CSS with right-to-left reading direction -->
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation-rtl.min.css"
+			integrity="sha256-F+9Ns8Z/1ZISonBbojH743hsmF3x3AlQdJEeD8DhQsE="
+			crossorigin="anonymous"
+		/>
+		<!-- Script for single page-->
+		<script>
+			window.onpopstate = function (event) {
+				console.log(event.state.status);
+				generateLed(event.state.status);
+			};
 
-{% block off %}
-	<a href="{% url 'light_control:turn_on' %}" class="success button"style="font-weight: bold; font-style: italic;">Turn on</a>
-	<a href="{% url 'light_control:blink' %}"class="warning button"style="font-weight: bold; font-style: italic;">Blink mode</a>
-	<button type="button" class="button hollow alert" disabled>Turn off</button>
-{% endblock %}
+			function generateLed(status) {
+				fetch(`/status/${status}`)
+				.then((response) => {
+					document.querySelectorAll('button').forEach((button) => {
+						if (button.id === `${status}Btn` && button.id !== "blinkBtn") {
+							button.disabled = true;
+						}
+						else {
+							button.disabled = false;
+						}
+					});
+				});
+			}
 
+			document.addEventListener('DOMContentLoaded', function () {
+				document.querySelectorAll('button').forEach((button) => {
+					button.onclick = function () {
+						const status = this.dataset.status;
+						history.pushState(
+							{ status: status },
+							'',
+							`status${status}`
+						);
+						document.querySelectorAll('button').forEach((button) => {
+							button.disabled = false;
+							if (button.id === 'blinkBtn') {
+								button.disabled = true;
+							} 
+						})
+						generateLed(status);
+					};
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<img
+			class="bg-img"
+			src="{% static 'RasWeb/bg1.jpg' %}"
+			alt="background image"
+		/>
+		<div class="title">
+			<h0>RASPBERRY CONTROLLER</h0>
+		</div>
+		<div class="grid-container">
+			<div class="grid-x grid-margin-x medium-up-2">
+				<div class="cell">
+					<div class="card">
+						<a href="#" class="thumbnail"
+							><img
+								src="{% static 'RasWeb/light.jpg' %}"
+								alt="Photo of a light bulb"
+						/></a>
+						<div class="card-section">
+							<h4 style="font-weight: bold;">
+								LIGHT <span class="badge success">OK</span>
+							</h4>
+							<div class="expanded button-group">
+								<button
+									data-status="on"
+									id="onBtn"
+									class="success button"
+									style="
+										font-weight: bold;
+										font-style: italic;
+									"
+								>
+									Turn on
+								</button>
+								<button
+									data-status="blink"
+									id="blinkBtn"
+									class="warning button"
+									style="
+										font-weight: bold;
+										font-style: italic;
+									"
+								>
+									Blink mode
+								</button>
+								<button
+									data-status="off"
+									id="offBtn"
+									class="alert button"
+									style="
+										font-weight: bold;
+										font-style: italic;
+									"
+								>
+									Turn off
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="cell">
+					<div class="card">
+						<a href="#" class="thumbnail"
+							><img
+								src="{% static 'RasWeb/temp.jpg' %}"
+								alt="Photo of temparature."
+						/></a>
+						<div class="card-section">
+							<h4 style="font-weight: bold;">
+								Degree <span class="badge warning">Fail</span>
+							</h4>
+							<p>Not available</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="{% static 'foundation/js/vendor/jquery.js' %}"></script>
+		<script src="{% static 'foundation/js/vendor/what-input.js' %}"></script>
+		<script src="{% static 'foundation/js/vendor/foundation.js' %}"></script>
+		<script src="{% static 'foundation/js/app.js' %}"></script>
+	</body>
+</html>
