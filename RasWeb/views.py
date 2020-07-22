@@ -1,17 +1,17 @@
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
 import time
-import RPi.GPIO as GPIO 
+# import RPi.GPIO as GPIO 
 
 # Create your views here.
 def index(request):
     return render(request, "RasWeb/index.html")
 
-LED_PIN = 18
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(LED_PIN, GPIO.OUT)
+# LED_PIN = 18
+# GPIO.setmode(GPIO.BOARD)
+# GPIO.setup(LED_PIN, GPIO.OUT)
 
-def status(request, stt):   
+def light(request, stt):   
     if stt == 'on':
         GPIO.output(LED_PIN, GPIO.HIGH)
         return HttpResponse()     

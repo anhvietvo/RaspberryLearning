@@ -33,7 +33,7 @@
 			};
 
 			function generateLed(status) {
-				fetch(`/status/${status}`)
+				fetch(`/light/${status}`)
 				.then((response) => {
 					document.querySelectorAll('button').forEach((button) => {
 						if (button.id === `${status}Btn` && button.id !== "blinkBtn") {
@@ -48,23 +48,25 @@
 
 			document.addEventListener('DOMContentLoaded', function () {
 				document.querySelectorAll('button').forEach((button) => {
-					button.onclick = function () {
-						const status = this.dataset.status;
-						history.pushState(
-							{ status: status },
-							'',
-							`status${status}`
-						);
-						document.querySelectorAll('button').forEach((button) => {
-							button.disabled = false;
-							if (button.id === 'blinkBtn') {
-								button.disabled = true;
-							} 
-						})
-						generateLed(status);
-					};
-				});
-			});
+					if (button.id !== 'tempBtn') {
+						button.onclick = function () {
+							const status = this.dataset.status;
+							history.pushState(
+								{ status: status },
+								'',
+								`status${status}`
+							);
+							document.querySelectorAll('button').forEach((button) => {
+								button.disabled = false;
+								if (button.id === 'blinkBtn') {
+									button.disabled = true;
+								} 
+							})
+							generateLed(status);
+						}
+					}
+				})
+			})
 		</script>
 	</head>
 	<body>
@@ -138,7 +140,21 @@
 							<h4 style="font-weight: bold;">
 								Degree <span class="badge warning">Fail</span>
 							</h4>
-							<p>Not available</p>
+							<div class="grid-x grid-margin-x">
+								<div class="cell medium-6 large-5">
+									<button
+										id="tempBtn"
+										class="success button expanded"
+										style="
+											font-weight: bold;
+											font-style: italic;
+										"
+									>
+										Turn on
+									</button>
+								</div>
+								<h4 id="tempStt" class="cell medium-6 large-7">Not available</h4>
+							</di>
 						</div>
 					</div>
 				</div>
@@ -148,5 +164,20 @@
 		<script src="{% static 'foundation/js/vendor/what-input.js' %}"></script>
 		<script src="{% static 'foundation/js/vendor/foundation.js' %}"></script>
 		<script src="{% static 'foundation/js/app.js' %}"></script>
+		<!--Put socket here-->
+		<script>
+			const socket = new WebSocket(
+				'ws://'
+				+ window.location.host
+				+ '/temp/'
+			);
+			socket.onmessage = function(e) {
+				var data = JSON.parse(e.data);
+				document.querySelector("#tempStt").innerHTML = data.text;
+			}
+			socket.onclose = function(e) {
+				console.error("Web socket closed unexpectedly");
+			}
+		</script>
 	</body>
 </html>
