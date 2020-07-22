@@ -25,6 +25,7 @@
 			integrity="sha256-F+9Ns8Z/1ZISonBbojH743hsmF3x3AlQdJEeD8DhQsE="
 			crossorigin="anonymous"
 		/>
+		<script src="https://kit.fontawesome.com/213fbc8967.js" crossorigin="anonymous"></script>
 		<!-- Script for single page-->
 		<script>
 			window.onpopstate = function (event) {
@@ -138,7 +139,12 @@
 							<h4 style="font-weight: bold;">
 								Degree <span class="badge warning">Fail</span>
 							</h4>
-							<h4 id="tempStt" class="expanded" style="font-weight: bold;">Not available</h4>
+							<div class="grid-x">
+								<div class="cell medium-6 large-2">
+									<i class="fas fa-temperature-high"></i>
+								</div>
+								<h4 class="cell medium-6 large-10" id="tempStt" style="font-weight: bold;">Not available</h4>
+							</div>
 						</div>
 					</div>
 				</div>
