@@ -48,22 +48,20 @@
 
 			document.addEventListener('DOMContentLoaded', function () {
 				document.querySelectorAll('button').forEach((button) => {
-					if (button.id !== 'tempBtn') {
-						button.onclick = function () {
-							const status = this.dataset.status;
-							history.pushState(
-								{ status: status },
-								'',
-								`status${status}`
-							);
-							document.querySelectorAll('button').forEach((button) => {
-								button.disabled = false;
-								if (button.id === 'blinkBtn') {
-									button.disabled = true;
-								} 
-							})
-							generateLed(status);
-						}
+					button.onclick = function () {
+						const status = this.dataset.status;
+						history.pushState(
+							{ status: status },
+							'',
+							`status${status}`
+						);
+						document.querySelectorAll('button').forEach((button) => {
+							button.disabled = false;
+							if (button.id === 'blinkBtn') {
+								button.disabled = true;
+							} 
+						})
+						generateLed(status);
 					}
 				})
 			})
