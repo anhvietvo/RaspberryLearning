@@ -3,6 +3,7 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import time
+# import RPi.GPIO as GPIO 
 
 class TempConsumer(WebsocketConsumer):
     def connect(self):
@@ -35,6 +36,9 @@ class TempConsumer(WebsocketConsumer):
 
 status = 0
 class LightConsumer(WebsocketConsumer):
+    # LED_PIN = 18
+    # GPIO.setmode(GPIO.BOARD)
+    # GPIO.setup(LED_PIN, GPIO.OUT)
     def connect(self):
         global status
         print("A client connected to light socket")
@@ -59,6 +63,7 @@ class LightConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         status = text_data_json["status"]
         if (status == "on"):
+            # GPIO.output(LED_PIN, GPIO.HIGH)
             print("Light is on")
             async_to_sync(self.channel_layer.group_send)(
                 "LightClients",
@@ -68,6 +73,7 @@ class LightConsumer(WebsocketConsumer):
                 }
             )
         elif (status == "off"):
+            # GPIO.output(LED_PIN, GPIO.LOW)
             print("Light is off")
             async_to_sync(self.channel_layer.group_send)(
                 "LightClients",
@@ -84,6 +90,11 @@ class LightConsumer(WebsocketConsumer):
                     "status": status
                 }
             )
+            # for i in range(10):
+            #     GPIO.output(LED_PIN, GPIO.HIGH)
+            #     time.sleep(0.5)
+            #     GPIO.output(LED_PIN, GPIO.LOW)
+            #     time.sleep(0.5)
             print("Light is blinking") 
             time.sleep(10)
             async_to_sync(self.channel_layer.group_send)(
