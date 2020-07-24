@@ -26,37 +26,6 @@
 			crossorigin="anonymous"
 		/>
 		<script src="https://kit.fontawesome.com/213fbc8967.js" crossorigin="anonymous"></script>
-		<!-- Script for single page-->
-		<!-- <script>
-			function generateLed(status) {
-				fetch(`/light/${status}`)
-				.then((response) => {
-					document.querySelectorAll('button').forEach((button) => {
-						if (button.id === `${status}Btn` && button.id !== "blinkBtn") {
-							button.disabled = true;
-						}
-						else {
-							button.disabled = false;
-						}
-					});
-				});
-			}
-
-			document.addEventListener('DOMContentLoaded', function () {
-				document.querySelectorAll('button').forEach((button) => {
-					button.onclick = function () {
-						const status = this.dataset.status;
-						document.querySelectorAll('button').forEach((button) => {
-							button.disabled = false;
-							if (button.id === 'blinkBtn') {
-								button.disabled = true;
-							} 
-						})
-						generateLed(status);
-					}
-				})
-			})
-		</script> -->
 	</head>
 	<body>
 		<img
@@ -146,6 +115,7 @@
 		<script src="{% static 'foundation/js/app.js' %}"></script>
 		<!--Put socket here-->
 		<script>
+			// Socket for light
 			const lightSocket = new WebSocket(
 				'ws://'
 				+ window.location.host
@@ -183,7 +153,11 @@
 					})
 				}
 			}	
-			
+			lightSocket.onclose = function(e) {
+				console.error("Web socket closed unexpectedly");
+			}
+	
+			// Socket for temparature
 			const tempSocket = new WebSocket(
 				'ws://'
 				+ window.location.host

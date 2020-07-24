@@ -7,32 +7,51 @@ import time
 class TempConsumer(WebsocketConsumer):
     def connect(self):
         print("A client connected to temp socket")
+        async_to_sync(self.channel_layer.group_add)(
+            "TempClients", 
+            self.channel_name
+        )
         self.accept()
-        for i in range (10):
+        async_to_sync(self.channel_layer.group_send)(
+            "TempClients",
+            {
+                "type": "temp",
+            }
+        )
+
+    def temp(self, event):
+        for i in range(10):
+            text = f"test send {i}"
             self.send(json.dumps({
-                "text": f"Hello{i}"    
+                "text": text
             }))
-            time.sleep(1)
-    def disconnect(self):
-        pass
+            time.sleep(2)
+
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(
+            "Tempclients",
+            self.channel_name
+        )
+
 status = 0
 class LightConsumer(WebsocketConsumer):
     def connect(self):
         global status
         print("A client connected to light socket")
         async_to_sync(self.channel_layer.group_add)(
-            "clients",
+            "LightClients",
             self.channel_name
         )
         self.accept()
         if (status != 0):
+            print(status)
             self.send(json.dumps({
                 "status": status
             }))
     
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
-            "clients",
+            "LightClients",
             self.channel_name
         )
         
@@ -42,7 +61,7 @@ class LightConsumer(WebsocketConsumer):
         if (status == "on"):
             print("Light is on")
             async_to_sync(self.channel_layer.group_send)(
-                "clients",
+                "LightClients",
                 {
                     "type": "lightStt",
                     "status": status
@@ -51,7 +70,7 @@ class LightConsumer(WebsocketConsumer):
         elif (status == "off"):
             print("Light is off")
             async_to_sync(self.channel_layer.group_send)(
-                "clients",
+                "LightClients",
                 {
                     "type": "lightStt",
                     "status": status
@@ -59,16 +78,16 @@ class LightConsumer(WebsocketConsumer):
             )
         elif (status == "blink"):
             async_to_sync(self.channel_layer.group_send)(
-                "clients",
+                "LightClients",
                 {
                     "type": "lightStt",
                     "status": status
                 }
             )
             print("Light is blinking") 
-            time.sleep(5)
+            time.sleep(10)
             async_to_sync(self.channel_layer.group_send)(
-                "clients",
+                "LightClients",
                 {
                     "type": "lightStt",
                     "status": "blink done"
