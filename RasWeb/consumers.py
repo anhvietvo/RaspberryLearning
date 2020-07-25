@@ -50,10 +50,11 @@ class TempConsumer(WebsocketConsumer):
         )
 
     def temp(self, event):
-        text = read_temp()
-        self.send(json.dumps({
-            "text": text
-        }))
+        while True:
+            text = read_temp()
+            self.send(json.dumps({
+                "text": text
+            }))
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
