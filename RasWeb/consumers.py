@@ -124,7 +124,7 @@ class LightConsumer(WebsocketConsumer):
                 time.sleep(0.5)
                 GPIO.output(LED_PIN, GPIO.LOW)
                 time.sleep(0.5)
-            print("Light is blinking") 
+            print("Light blinked") 
             async_to_sync(self.channel_layer.group_send)(
                 "LightClients",
                 {
