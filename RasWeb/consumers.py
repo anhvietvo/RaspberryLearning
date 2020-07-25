@@ -62,10 +62,10 @@ class TempConsumer(WebsocketConsumer):
         )
 
 status = 0
+LED_PIN = 18
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(LED_PIN, GPIO.OUT)
 class LightConsumer(WebsocketConsumer):
-    LED_PIN = 18
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(LED_PIN, GPIO.OUT)
     def connect(self):
         global status
         print("A client connected to light socket")
