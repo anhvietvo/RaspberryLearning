@@ -31,7 +31,7 @@ def read_temp():
         temp_string = lines[1][equals_pos+2:]
         temp_c = float(temp_string) / 1000.0
         temp_f = temp_c * 9.0 / 5.0 + 32.0
-        return temp_c
+        return temp_c, temp_f
 
 #SocketIO implementation
 class TempConsumer(WebsocketConsumer):
@@ -51,9 +51,9 @@ class TempConsumer(WebsocketConsumer):
 
     def temp(self, event):
         while True:
-            text = read_temp()
+            c, f = read_temp()
             self.send(json.dumps({
-                "text": text
+                "text": "{:.2f}°C = {:.2f}°F".format(c, f) 
             }))
 
     def disconnect(self, close_code):
@@ -63,6 +63,7 @@ class TempConsumer(WebsocketConsumer):
         )
 
 status = 0
+GPIO.setwarnings(False)
 LED_PIN = 18
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(LED_PIN, GPIO.OUT)
