@@ -3,8 +3,37 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import time
-# import RPi.GPIO as GPIO 
+import RPi.GPIO as GPIO 
+import os
+import glob
 
+# Reading temperature from censor
+os.system('modprobe w1-gpio')
+os.system('modprobe w1-therm')
+ 
+base_dir = '/sys/bus/w1/devices/'
+device_folder = glob.glob(base_dir + '28*')[0]
+device_file = device_folder + '/w1_slave'
+ 
+def read_temp_raw():
+    f = open(device_file, 'r')
+    lines = f.readlines()
+    f.close()
+    return lines
+ 
+def read_temp():
+    lines = read_temp_raw()
+    while lines[0].strip()[-3:] != 'YES':
+        time.sleep(0.2)
+        lines = read_temp_raw()
+    equals_pos = lines[1].find('t=')
+    if equals_pos != -1:
+        temp_string = lines[1][equals_pos+2:]
+        temp_c = float(temp_string) / 1000.0
+        temp_f = temp_c * 9.0 / 5.0 + 32.0
+        return temp_c
+
+#SocketIO implementation
 class TempConsumer(WebsocketConsumer):
     def connect(self):
         print("A client connected to temp socket")
@@ -21,12 +50,10 @@ class TempConsumer(WebsocketConsumer):
         )
 
     def temp(self, event):
-        for i in range(10):
-            text = f"test send {i}"
-            self.send(json.dumps({
-                "text": text
-            }))
-            time.sleep(2)
+        text = read_temp()
+        self.send(json.dumps({
+            "text": text
+        }))
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
@@ -36,9 +63,9 @@ class TempConsumer(WebsocketConsumer):
 
 status = 0
 class LightConsumer(WebsocketConsumer):
-    # LED_PIN = 18
-    # GPIO.setmode(GPIO.BOARD)
-    # GPIO.setup(LED_PIN, GPIO.OUT)
+    LED_PIN = 18
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(LED_PIN, GPIO.OUT)
     def connect(self):
         global status
         print("A client connected to light socket")
@@ -63,7 +90,7 @@ class LightConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         status = text_data_json["status"]
         if (status == "on"):
-            # GPIO.output(LED_PIN, GPIO.HIGH)
+            GPIO.output(LED_PIN, GPIO.HIGH)
             print("Light is on")
             async_to_sync(self.channel_layer.group_send)(
                 "LightClients",
@@ -73,7 +100,7 @@ class LightConsumer(WebsocketConsumer):
                 }
             )
         elif (status == "off"):
-            # GPIO.output(LED_PIN, GPIO.LOW)
+            GPIO.output(LED_PIN, GPIO.LOW)
             print("Light is off")
             async_to_sync(self.channel_layer.group_send)(
                 "LightClients",
@@ -90,13 +117,12 @@ class LightConsumer(WebsocketConsumer):
                     "status": status
                 }
             )
-            # for i in range(10):
-            #     GPIO.output(LED_PIN, GPIO.HIGH)
-            #     time.sleep(0.5)
-            #     GPIO.output(LED_PIN, GPIO.LOW)
-            #     time.sleep(0.5)
+            for i in range(10):
+                GPIO.output(LED_PIN, GPIO.HIGH)
+                time.sleep(0.5)
+                GPIO.output(LED_PIN, GPIO.LOW)
+                time.sleep(0.5)
             print("Light is blinking") 
-            time.sleep(10)
             async_to_sync(self.channel_layer.group_send)(
                 "LightClients",
                 {
