@@ -25,6 +25,8 @@
 			integrity="sha256-F+9Ns8Z/1ZISonBbojH743hsmF3x3AlQdJEeD8DhQsE="
 			crossorigin="anonymous"
 		/>
+		<!--Chart-->
+		<script src="{%static 'plotly.min.js' %}"></script>
 	</head>
 	<body>
 		<img
@@ -100,10 +102,38 @@
 							<div class="grid-x">
 								<div class="cell medium-6 large-4">
 									<p><button class="button" data-toggle="animatedModal10">Open Graph</button></p>
+									<!--Modal-->
+									<div class="reveal" id="animatedModal10" data-reveal data-close-on-click="false" data-animation-in="hinge-in-from-middle-y" data-animation-out="hinge-out-from-middle-y" style="width:47%">
+										<!--Chart here-->
+										<div class="wrapper" style="margin:0;padding:0">
 
-									<div class="reveal" id="animatedModal10" data-reveal data-close-on-click="true" data-animation-in="spin-in" data-animation-out="spin-out">
-										<h1>Whoa, I'm dizzy!</h1>
-										<p class="lead">There are many options for animating modals, check out the Motion UI library to see them all</p>
+											<div id="chart"></div>
+											<script>
+												// function getData() {
+												// 	return Math.random();
+												// }  
+
+												Plotly.plot('chart',[{
+													y:[int(tempC)],
+													type:'line'
+												}]);
+												
+												var cnt = 0;
+
+												setInterval(function(){
+
+													Plotly.extendTraces('chart',{ y:[[getData()]]}, [0]);
+													cnt++;
+													if(cnt > 100) {
+														Plotly.relayout('chart',{
+															xaxis: {
+																range: [cnt-100,cnt]
+															}
+														});
+													}
+												},2000);
+											</script>
+										</div>
 										<button class="close-button" data-close aria-label="Close reveal" type="button">
 											<span aria-hidden="true">&times;</span>
 										</button>
@@ -173,7 +203,9 @@
 			tempSocket.onopen = console.log("Temp socket is opened");
 			tempSocket.onmessage = function(e) {
 				var data = JSON.parse(e.data);
-				document.querySelector("#tempStt").innerHTML = data.text;		
+				var tempC = data.tempC;
+				var tempF = data.tempF;
+				document.querySelector("#tempStt").innerHTML = `${tempC} = ${tempF}`;		
 			}
 			tempSocket.onclose = function(e) {
 				console.error("Web socket closed unexpectedly");

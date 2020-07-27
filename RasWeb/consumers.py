@@ -3,17 +3,17 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import time
-# import RPi.GPIO as GPIO 
-# import os
-# import glob
+import RPi.GPIO as GPIO 
+import os
+import glob
 
-# Reading temperature from censor
-# os.system('modprobe w1-gpio')
-# os.system('modprobe w1-therm')
+Reading temperature from censor
+os.system('modprobe w1-gpio')
+os.system('modprobe w1-therm')
  
-# base_dir = '/sys/bus/w1/devices/'
-# device_folder = glob.glob(base_dir + '28*')[0]
-# device_file = device_folder + '/w1_slave'
+base_dir = '/sys/bus/w1/devices/'
+device_folder = glob.glob(base_dir + '28*')[0]
+device_file = device_folder + '/w1_slave'
  
 def read_temp_raw():
     f = open(device_file, 'r')
@@ -31,7 +31,7 @@ def read_temp():
         temp_string = lines[1][equals_pos+2:]
         temp_c = float(temp_string) / 1000.0
         temp_f = temp_c * 9.0 / 5.0 + 32.0
-        return temp_c
+        return temp_c, temp_f
 
 #SocketIO implementation
 class TempConsumer(WebsocketConsumer):
@@ -42,19 +42,20 @@ class TempConsumer(WebsocketConsumer):
             self.channel_name
         )
         self.accept()
-    #     async_to_sync(self.channel_layer.group_send)(
-    #         "TempClients",
-    #         {
-    #             "type": "temp",
-    #         }
-    #     )
+        async_to_sync(self.channel_layer.group_send)(
+            "TempClients",
+            {
+                "type": "temp",
+            }
+        )
 
-    # def temp(self, event):
-    #     while True:
-    #         text = read_temp()
-    #         self.send(json.dumps({
-    #             "text": text
-    #         }))
+    def temp(self, event):
+        while True:
+            tempC, tempF = read_temp()
+            self.send(json.dumps({
+                "tempC": "{:.2f}".format(tempC),
+                "tempF": "{:.2f}".format(tempF)
+            }))
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
@@ -63,9 +64,9 @@ class TempConsumer(WebsocketConsumer):
         )
 
 status = 0
-# LED_PIN = 18
-# GPIO.setmode(GPIO.BOARD)
-# GPIO.setup(LED_PIN, GPIO.OUT)
+LED_PIN = 18
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(LED_PIN, GPIO.OUT)
 class LightConsumer(WebsocketConsumer):
     def connect(self):
         global status
@@ -91,7 +92,7 @@ class LightConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         status = text_data_json["status"]
         if (status == "on"):
-            # GPIO.output(LED_PIN, GPIO.HIGH)
+            GPIO.output(LED_PIN, GPIO.HIGH)
             print("Light is on")
             async_to_sync(self.channel_layer.group_send)(
                 "LightClients",
@@ -101,7 +102,7 @@ class LightConsumer(WebsocketConsumer):
                 }
             )
         elif (status == "off"):
-            # GPIO.output(LED_PIN, GPIO.LOW)
+            GPIO.output(LED_PIN, GPIO.LOW)
             print("Light is off")
             async_to_sync(self.channel_layer.group_send)(
                 "LightClients",
@@ -118,12 +119,12 @@ class LightConsumer(WebsocketConsumer):
                     "status": status
                 }
             )
-            # for i in range(10):
-                # GPIO.output(LED_PIN, GPIO.HIGH)
-                # time.sleep(0.5)
-                # GPIO.output(LED_PIN, GPIO.LOW)
-                # time.sleep(0.5)
-            print("Light is blinking") 
+            for i in range(10):
+                GPIO.output(LED_PIN, GPIO.HIGH)
+                time.sleep(0.5)
+                GPIO.output(LED_PIN, GPIO.LOW)
+                time.sleep(0.5)
+            print("Light blinked") 
             async_to_sync(self.channel_layer.group_send)(
                 "LightClients",
                 {
