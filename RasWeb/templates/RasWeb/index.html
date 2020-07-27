@@ -101,7 +101,7 @@
 							</h4>
 							<div class="grid-x">
 								<div class="cell medium-6 large-4">
-									<p><button class="button" data-toggle="animatedModal10">Open Graph</button></p>
+									<p><button id="graphBtn" class="button" data-toggle="animatedModal10">Open Graph</button></p>
 									<!--Modal-->
 									<div class="reveal" id="animatedModal10" data-reveal data-close-on-click="false" data-animation-in="hinge-in-from-middle-y" data-animation-out="hinge-out-from-middle-y" style="width:47%">
 										<!--Chart here-->
@@ -134,7 +134,7 @@
 												},2000);
 											</script>
 										</div>
-										<button class="close-button" data-close aria-label="Close reveal" type="button">
+										<button id="closeBtn" class="close-button" data-close aria-label="Close reveal" type="button">
 											<span aria-hidden="true">&times;</span>
 										</button>
 									</div>
@@ -162,18 +162,20 @@
 				console.log("Light socket is opened");
 
 				document.querySelectorAll('button').forEach((button) => {
-					button.onclick = function() {
-						const status = this.dataset.status;
-						lightSocket.send(JSON.stringify({
-							'status': status
-						}));
-						document.querySelectorAll('button').forEach((button) => {
-							if (button.id == "blinkBtn") {
-								button.disabled = true;
-							} else {
-								button.disabled = false;
-							}
-						})
+					if (button.id != ("graphBtn" || "closeBtn")) {
+						button.onclick = function() {
+							const status = this.dataset.status;
+							lightSocket.send(JSON.stringify({
+								'status': status
+							}));
+							document.querySelectorAll('button').forEach((button) => {
+								if (button.id == "blinkBtn") {
+									button.disabled = true;
+								} else {
+									button.disabled = false;
+								}
+							})
+						}
 					}
 				})
 			}
