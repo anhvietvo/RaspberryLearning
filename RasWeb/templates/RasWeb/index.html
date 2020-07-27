@@ -25,7 +25,8 @@
 			integrity="sha256-F+9Ns8Z/1ZISonBbojH743hsmF3x3AlQdJEeD8DhQsE="
 			crossorigin="anonymous"
 		/>
-		<script src="https://kit.fontawesome.com/213fbc8967.js" crossorigin="anonymous"></script>
+		<!--Chart-->
+		<script src="{%static 'plotly.min.js' %}"></script>
 	</head>
 	<body>
 		<img
@@ -99,10 +100,23 @@
 								Degree <span class="badge success">OK</span>
 							</h4>
 							<div class="grid-x">
-								<div class="cell medium-6 large-2">
-									<i class="fas fa-temperature-high"></i>
+								<div class="cell medium-6 large-4">
+									<p><button id="graphBtn" class="button" data-toggle="animatedModal10">Open Graph</button></p>
+									<!--Modal-->
+									<div class="reveal" id="animatedModal10" data-reveal data-close-on-click="false" data-animation-in="hinge-in-from-middle-y" data-animation-out="hinge-out-from-middle-y" style="width:47%">
+										<!--Chart here-->
+										<div class="wrapper" style="margin:0;padding:0">
+
+											<div id="chart"></div>
+											<script>
+											</script>
+										</div>
+										<button id="closeBtn" class="close-button" data-close aria-label="Close reveal" type="button">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
 								</div>
-								<h4 class="cell medium-6 large-10" id="tempStt" style="font-weight: bold;">Not available</h4>
+								<h4 class="cell medium-6 large-8" id="tempStt" style="font-weight: bold;">Not available</h4>
 							</div>
 						</div>
 					</div>
@@ -125,18 +139,20 @@
 				console.log("Light socket is opened");
 
 				document.querySelectorAll('button').forEach((button) => {
-					button.onclick = function() {
-						const status = this.dataset.status;
-						lightSocket.send(JSON.stringify({
-							'status': status
-						}));
-						document.querySelectorAll('button').forEach((button) => {
-							if (button.id == "blinkBtn") {
-								button.disabled = true;
-							} else {
-								button.disabled = false;
-							}
-						})
+					if (button.id != "graphBtn" && button.id != "closeBtn") {
+						button.onclick = function() {
+							const status = this.dataset.status;
+							lightSocket.send(JSON.stringify({
+								'status': status
+							}));
+							document.querySelectorAll('button').forEach((button) => {
+								if (button.id == "blinkBtn") {
+									button.disabled = true;
+								} else {
+									button.disabled = false;
+								}
+							})
+						}
 					}
 				})
 			}
@@ -158,6 +174,8 @@
 			}
 	
 			// Socket for temperature
+			var dataTempC = 0;
+			var dataTempF = 0;
 			const tempSocket = new WebSocket(
 				'ws://'
 				+ window.location.host
@@ -166,11 +184,52 @@
 			tempSocket.onopen = console.log("Temp socket is opened");
 			tempSocket.onmessage = function(e) {
 				var data = JSON.parse(e.data);
-				document.querySelector("#tempStt").innerHTML = data.text;		
+				var tempC = data.tempC;
+				dataTempC = tempC;
+				var tempF = data.tempF;
+				dataTempF = tempF;
+				document.querySelector("#tempStt").innerHTML = `${tempC}°C = ${tempF}°F`;		
 			}
 			tempSocket.onclose = function(e) {
 				console.error("Web socket closed unexpectedly");
 			}
+
+			// Script for chart
+			function getDataC() {
+				return dataTempC;
+			}  
+			function getDataF() {
+				return dataTempF;
+			}
+
+			Plotly.plot('chart',[{
+				y:[getDataC()],
+				type:'line',
+				name:'°C'
+			}, 
+			{
+				y:[getDataF()],
+				type:'line',
+				name: '°F'
+			}], 
+			{
+				title: 'Temperature Graph'
+			});
+			
+			var cnt = 0;
+
+			setInterval(function(){
+
+				Plotly.extendTraces('chart',{ y:[[getDataC()], [getDataF()]]}, [0, 1]);
+				cnt++;
+				if(cnt > 100) {
+					Plotly.relayout('chart',{
+						xaxis: {
+							range: [cnt-100,cnt]
+						}
+					});
+				}
+			},2000);
 		</script>
 	</body>
 </html>

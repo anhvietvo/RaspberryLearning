@@ -51,9 +51,10 @@ class TempConsumer(WebsocketConsumer):
 
     def temp(self, event):
         while True:
-            c, f = read_temp()
+            tempC, tempF = read_temp()
             self.send(json.dumps({
-                "text": "{:.2f}°C = {:.2f}°F".format(c, f) 
+                "tempC": "{:.2f}".format(tempC),
+                "tempF": "{:.2f}".format(tempF)
             }))
 
     def disconnect(self, close_code):
@@ -63,7 +64,7 @@ class TempConsumer(WebsocketConsumer):
         )
 
 status = 0
-GPIO.setwarnings(False)
+GPIO.setwarnings(False) 
 LED_PIN = 18
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(LED_PIN, GPIO.OUT)
