@@ -64,6 +64,7 @@ class TempConsumer(WebsocketConsumer):
         )
 
 status = 0
+GPIO.warnings = False 
 LED_PIN = 18
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(LED_PIN, GPIO.OUT)
