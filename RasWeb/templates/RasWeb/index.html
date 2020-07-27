@@ -114,7 +114,7 @@
 												// }  
 
 												Plotly.plot('chart',[{
-													y:[int(tempC)],
+													y:[await tempC],
 													type:'line'
 												}]);
 												
@@ -162,7 +162,7 @@
 				console.log("Light socket is opened");
 
 				document.querySelectorAll('button').forEach((button) => {
-					if (button.id != ("graphBtn" || "closeBtn")) {
+					if (button.id != "graphBtn" || button.id != "closeBtn") {
 						button.onclick = function() {
 							const status = this.dataset.status;
 							lightSocket.send(JSON.stringify({

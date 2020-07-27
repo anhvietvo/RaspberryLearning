@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO
 import os
 import glob
 
-Reading temperature from censor
+# Reading temperature from censor
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
  
