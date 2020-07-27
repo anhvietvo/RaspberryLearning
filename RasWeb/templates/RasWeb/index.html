@@ -139,7 +139,7 @@
 				console.log("Light socket is opened");
 
 				document.querySelectorAll('button').forEach((button) => {
-					if (button.id != "graphBtn" || button.id != "closeBtn") {
+					if (button.id != "graphBtn" && button.id != "closeBtn") {
 						button.onclick = function() {
 							const status = this.dataset.status;
 							lightSocket.send(JSON.stringify({
