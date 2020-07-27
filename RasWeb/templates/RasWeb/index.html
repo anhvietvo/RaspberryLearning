@@ -101,22 +101,52 @@
 							</h4>
 							<div class="grid-x">
 								<div class="cell medium-6 large-4">
-									<p><button id="graphBtn" class="button" data-toggle="animatedModal10">Open Graph</button></p>
+									<p>
+										<button
+											id="graphBtn"
+											class="button"
+											data-toggle="animatedModal10"
+										>
+											Open Graph
+										</button>
+									</p>
 									<!--Modal-->
-									<div class="reveal" id="animatedModal10" data-reveal data-close-on-click="false" data-animation-in="hinge-in-from-middle-y" data-animation-out="hinge-out-from-middle-y" style="width:47%">
+									<div
+										class="reveal"
+										id="animatedModal10"
+										data-reveal
+										data-close-on-click="false"
+										data-animation-in="hinge-in-from-middle-y"
+										data-animation-out="hinge-out-from-middle-y"
+										style="width: 47%;"
+									>
 										<!--Chart here-->
-										<div class="wrapper" style="margin:0;padding:0">
-
+										<div
+											class="wrapper"
+											style="margin: 0; padding: 0;"
+										>
 											<div id="chart"></div>
-											<script>
-											</script>
 										</div>
-										<button id="closeBtn" class="close-button" data-close aria-label="Close reveal" type="button">
-											<span aria-hidden="true">&times;</span>
+										<button
+											id="closeBtn"
+											class="close-button"
+											data-close
+											aria-label="Close reveal"
+											type="button"
+										>
+											<span aria-hidden="true"
+												>&times;</span
+											>
 										</button>
 									</div>
 								</div>
-								<h4 class="cell medium-6 large-8" id="tempStt" style="font-weight: bold;">Not available</h4>
+								<h4
+									class="cell medium-6 large-8"
+									id="tempStt"
+									style="font-weight: bold;"
+								>
+									Not available
+								</h4>
 							</div>
 						</div>
 					</div>
@@ -131,105 +161,117 @@
 		<script>
 			// Socket for light
 			const lightSocket = new WebSocket(
-				'ws://'
-				+ window.location.host
-				+ '/light/'
+				'ws://' + window.location.host + '/light/'
 			);
-			lightSocket.onopen = function(e) {
-				console.log("Light socket is opened");
+			lightSocket.onopen = function (e) {
+				console.log('Light socket is opened');
 
 				document.querySelectorAll('button').forEach((button) => {
-					if (button.id != "graphBtn" && button.id != "closeBtn") {
-						button.onclick = function() {
+					if (button.id != 'graphBtn' && button.id != 'closeBtn') {
+						button.onclick = function () {
 							const status = this.dataset.status;
-							lightSocket.send(JSON.stringify({
-								'status': status
-							}));
-							document.querySelectorAll('button').forEach((button) => {
-								if (button.id == "blinkBtn") {
-									button.disabled = true;
-								} else {
-									button.disabled = false;
-								}
-							})
-						}
+							lightSocket.send(
+								JSON.stringify({
+									status: status,
+								})
+							);
+							document
+								.querySelectorAll('button')
+								.forEach((button) => {
+									if (button.id == 'blinkBtn') {
+										button.disabled = true;
+									} else {
+										button.disabled = false;
+									}
+								});
+						};
 					}
-				})
-			}
-			lightSocket.onmessage = function(e) {
-				var data = JSON.parse(e.data)
-				if (data.status === "blink done") {
-					document.querySelector("#blinkBtn").disabled = false;
+				});
+			};
+			lightSocket.onmessage = function (e) {
+				var data = JSON.parse(e.data);
+				if (data.status === 'blink done') {
+					document.querySelector('#blinkBtn').disabled = false;
 				} else {
-					document.querySelector(`#${data.status}Btn`).disabled = true;
-					document.querySelectorAll("button").forEach(button => {
+					document.querySelector(
+						`#${data.status}Btn`
+					).disabled = true;
+					document.querySelectorAll('button').forEach((button) => {
 						if (button.id != `${data.status}Btn`) {
 							button.disabled = false;
 						}
-					})
+					});
 				}
-			}	
-			lightSocket.onclose = function(e) {
-				console.error("Web socket closed unexpectedly");
-			}
-	
+			};
+			lightSocket.onclose = function (e) {
+				console.error('Web socket closed unexpectedly');
+			};
+
 			// Socket for temperature
 			var dataTempC = 0;
 			var dataTempF = 0;
 			const tempSocket = new WebSocket(
-				'ws://'
-				+ window.location.host
-				+ '/temp/'
+				'ws://' + window.location.host + '/temp/'
 			);
-			tempSocket.onopen = console.log("Temp socket is opened");
-			tempSocket.onmessage = function(e) {
+			tempSocket.onopen = console.log('Temp socket is opened');
+			tempSocket.onmessage = function (e) {
 				var data = JSON.parse(e.data);
 				var tempC = data.tempC;
 				dataTempC = tempC;
 				var tempF = data.tempF;
 				dataTempF = tempF;
-				document.querySelector("#tempStt").innerHTML = `${tempC}°C = ${tempF}°F`;		
-			}
-			tempSocket.onclose = function(e) {
-				console.error("Web socket closed unexpectedly");
-			}
+				document.querySelector(
+					'#tempStt'
+				).innerHTML = `${tempC}°C = ${tempF}°F`;
+			};
+			tempSocket.onclose = function (e) {
+				console.error('Web socket closed unexpectedly');
+			};
 
 			// Script for chart
 			function getDataC() {
 				return dataTempC;
-			}  
+			}
 			function getDataF() {
 				return dataTempF;
 			}
 
-			Plotly.plot('chart',[{
-				y:[getDataC()],
-				type:'line',
-				name:'°C'
-			}, 
-			{
-				y:[getDataF()],
-				type:'line',
-				name: '°F'
-			}], 
-			{
-				title: 'Temperature Graph'
-			});
-			
+			Plotly.plot(
+				'chart',
+				[
+					{
+						y: [getDataC()],
+						type: 'line',
+						name: '°C',
+					},
+					{
+						y: [getDataF()],
+						type: 'line',
+						name: '°F',
+					},
+				],
+				{
+					title: 'Temperature Graph',
+				}
+			);
+
 			var cnt = 0;
 
-			setInterval(function(){
-
-				Plotly.extendTraces('chart',{ y:[[getDataC()], [getDataF()]]}, [0, 1]);
+			setInterval(function () {
+				Plotly.extendTraces(
+					'chart',
+					{ y: [[getDataC()], [getDataF()]] },
+					[0, 1]
+				);
 				cnt++;
-				if(cnt > 7) {
-					Plotly.relayout('chart',{
+				if (cnt > 7) {
+					Plotly.relayout('chart', {
 						xaxis: {
-							range: [cnt-7,cnt]
-						}
+							range: [cnt - 7, cnt],
+						},
 					});
 				}
-			},5000);
+			}, 5000);
 		</script>
 	</body>
 </html>
