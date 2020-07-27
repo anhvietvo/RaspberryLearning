@@ -184,7 +184,7 @@
 				var data = JSON.parse(e.data);
 				var tempC = data.tempC;
 				var tempF = data.tempF;
-				document.querySelector("#tempStt").innerHTML = `${tempC} = ${tempF}`;		
+				document.querySelector("#tempStt").innerHTML = `${tempC}°C = ${tempF}°F`;		
 			}
 			tempSocket.onclose = function(e) {
 				console.error("Web socket closed unexpectedly");
