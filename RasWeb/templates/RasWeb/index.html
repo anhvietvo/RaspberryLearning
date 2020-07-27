@@ -218,7 +218,7 @@
 
 			setInterval(function(){
 
-				Plotly.extendTraces('chart',{ y:[[getDataC()], [getDataF()]]}, [0]);
+				Plotly.extendTraces('chart',{ y:[[getDataC()], [getDataF()]]}, [0, 1]);
 				cnt++;
 				if(cnt > 100) {
 					Plotly.relayout('chart',{
