@@ -191,8 +191,8 @@
 			}
 
 			// Script for chart
-			function getData() {
-				return Number(tempC);
+			async function getData() {
+				return Number(await tempC);
 			}  
 
 			Plotly.plot('chart',[{
